@@ -1,1 +1,3 @@
-"# AdventOfCode-2017" 
+# AdventOfCode-2017
+
+Solve AdventOfCode with scala!!
