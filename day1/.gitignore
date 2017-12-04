@@ -1,0 +1,10 @@
+bin/
+project/
+target/
+.lib-src
+tags
+ctags
+.cache
+.classpath
+.project
+.settings
