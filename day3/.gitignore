@@ -9,3 +9,4 @@ build.sbt
 .classpath
 .project
 .settings
+.puzzleInput
