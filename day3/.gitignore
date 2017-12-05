@@ -1,0 +1,11 @@
+bin/
+project/
+target/
+.lib-src
+tags
+ctags
+build.sbt
+.cache
+.classpath
+.project
+.settings
