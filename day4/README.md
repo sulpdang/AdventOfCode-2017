@@ -8,9 +8,11 @@ To ensure security, a valid passphrase must contain no duplicate words.
 
 For example:
 
-  aa bb cc dd ee is valid.
-  aa bb cc dd aa is not valid - the word aa appears more than once.
-  aa bb cc dd aaa is valid - aa and aaa count as different words.
+<pre><code>
+aa bb cc dd ee is valid.
+aa bb cc dd aa is not valid - the word aa appears more than once.
+aa bb cc dd aaa is valid - aa and aaa count as different words.
+</code></pre>
 
 The system's full passphrase list is available as your puzzle input. How many passphrases are valid?
 
@@ -20,10 +22,12 @@ For added security, yet another system policy has been put in place. Now, a vali
 
 For example:
 
+<pre><code>
   abcde fghij is a valid passphrase.
   abcde xyz ecdab is not valid - the letters from the third word can be rearranged to form the first word.
   a ab abc abd abf abj is a valid passphrase, because all letters need to be used when forming another word.
   iiii oiii ooii oooi oooo is valid.
   oiii ioii iioi iiio is not valid - any of these words can be rearranged to form any other word.
+</code></pre>
 
 Under this new system policy, how many passphrases are valid?
