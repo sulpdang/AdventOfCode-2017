@@ -15,4 +15,5 @@ object Util {
       .split('\n').toList
   }
 
+  def input = readContent
 }
