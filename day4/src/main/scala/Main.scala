@@ -5,6 +5,7 @@
 //
 
 object Main extends App {
+  import myutil.Util._
   type Word = String
   type Words = Array[Word]
   def readContent:Array[Words] = {
