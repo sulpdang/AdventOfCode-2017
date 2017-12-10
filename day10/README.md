@@ -30,11 +30,11 @@ Suppose we instead only had a circular list containing five elements, `0, 1, 2, 
 - Then, the current position moves forward by the length, 3, plus the skip size, 0: `2 1 0 [3] 4`.
   Finally, the skip size increases to 1.
 - The second length, 4, selects a section which wraps: `2 1) 0 ([3] 4`.
-- The sublist 3 4 2 1 is reversed to form 1 2 4 3: 4 3) 0 ([1] 2.
-- The current position moves forward by the length plus the skip size, a total of 5, causing it not to move because it wraps around: 4 3 0 [1] 2. The skip size increases to 2.
+- The sublist `3 4 2 1` is reversed to form `1 2 4 3`: `4 3) 0 ([1] 2`.
+- The current position moves forward by the length plus the skip size, a total of 5, causing it not to move because it wraps around: `4 3 0 [1] 2`. The skip size increases to 2.
 - The third length, 1, selects a sublist of a single element, and so reversing it has no effect.
-- The current position moves forward by the length (1) plus the skip size (2): 4 [3] 0 1 2. The skip size increases to 3.
-- The fourth length, 5, selects every element starting with the second: 4) ([3] 0 1 2. Reversing this sublist (`3 0 1 2 4` into `4 2 1 0 3`) produces: `3) ([4] 2 1 0`.
+- The current position moves forward by the length (1) plus the skip size (2): `4 [3] 0 1 2`. The skip size increases to 3.
+- The fourth length, 5, selects every element starting with the second: `4) ([3] 0 1 2`. Reversing this sublist (`3 0 1 2 4` into `4 2 1 0 3`) produces: `3) ([4] 2 1 0`.
 - Finally, the current position moves forward by 8: `3 4 2 1 [0]`. The skip size increases to 4.
 
 In this example, the first two numbers in the list end up being 3 and 4; to check the process, you can multiply them together to produce 12.
