@@ -20,8 +20,6 @@ object Util {
 abstract class Day(day:Int) extends App {
 
   type Input
-  type Res1
-  type Res2
   
   import scala.util._
 
