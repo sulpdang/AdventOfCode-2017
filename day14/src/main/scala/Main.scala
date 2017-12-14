@@ -16,28 +16,24 @@ object Main extends Day(13) {
 
   def makeMap(input:Input) = {
     val hexString = "0123456789abcdef"
-    (0 to 127).map{i=>s"${input}-$i"}
-      .map{ knotHash(_)
-        .flatMap{
-          hexString.indexOf(_)
-            .toBinaryString.reverse.padTo(4,"0").reverse
-        }.mkString("").toCharArray
+    (0 to 127)
+      .map{i => knotHash(s"${input}-$i")
+        .flatMap{ hexString.indexOf(_).toBinaryString.reverse.padTo(4,"0").reverse }
+        .mkString("")
+        .toCharArray
       }.toArray
   }
 
   def solve(input:Input)  = makeMap(input).map{_.count{_ == '1'}}.sum
 
   def solve2(input:Input) = {
-    val map = makeMap(input).map{_.map{
-      case '0' => '.'
-      case '1' => '#'
-    }}
+    val map = makeMap(input)
     val direction = List((1,0), (-1,0), (0,1), (0,-1))
     def dfs(x:Int, y:Int) {
       def isPossible(x:Int) = 0 <= x && x <= 127
       map(x)(y) match {
-        case '#' =>  {
-          map(x)(y) = '.'
+        case '1' =>  {
+          map(x)(y) = '0'
           direction
             .filter {case (a,b) => isPossible(a+x) && isPossible(b+y)}
             .foreach{case (a,b) => dfs(a+x, b+y) }
@@ -50,7 +46,7 @@ object Main extends Day(13) {
     for{
       i <- (0 until 128)
       j <- (0 until 128)
-      if map(i)(j) == '#'
+      if map(i)(j) == '1'
     } {
       dfs(i, j)
       t += 1
