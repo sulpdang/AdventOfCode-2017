@@ -6,7 +6,7 @@
 
 import myutil._
 
-object Main extends Day(13) {
+object Main extends Day(14) {
 
   import KnotHash._
 
