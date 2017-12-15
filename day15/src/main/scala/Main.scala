@@ -13,17 +13,13 @@ object Main extends Day(15) {
 
   type Input = List[BigInt]
 
-  implicit class BigIntUtil(val cur:BigInt) extends AnyVal {
-    def nextValue(usedNum:Int)(func:BigInt => Boolean) = {
-      def mod = 2147483647
-
-      @tailrec
-      def nextValueAcc(value:BigInt):BigInt = {
-        val nextValue = (value * usedNum) % mod
-        if(func(nextValue)) nextValue
-        else nextValueAcc(nextValue)
-      }
-      nextValueAcc(cur)
+  class Generator(n:BigInt, num:BigInt) extends Iterator[BigInt] {
+    private var value = n
+    private def mod = 2147483647
+    def hasNext = true
+    def next() = {
+      value = value * num % mod
+      value
     }
   }
 
@@ -34,17 +30,11 @@ object Main extends Day(15) {
     val List(initA, initB) = processedInput
     val lowest = BigInt((1 << 16) - 1)
 
-    @tailrec 
-    def countMatchesAcc(a:BigInt, b:BigInt, acc:Int = 0, cur:Int = 1):Int = {
-      if(cur == max) acc
-      else {
-        val nextA = a.nextValue(16807)(funcA)
-        val nextB = b.nextValue(48271)(funcB)
-        val nextAcc = if((a & lowest).intValue == (b & lowest).intValue) acc + 1 else acc
-        countMatchesAcc(nextA, nextB, nextAcc, cur+1)
-      }
-    }
-    countMatchesAcc(initA, initB)
+    val aGen = new Generator(initA, 16807).filter{funcA}.map{_ & lowest}
+    val bGen = new Generator(initB, 48271).filter{funcB}.map{_ & lowest}
+
+    aGen.zip(bGen).take(max).count{case (a,b) => a.intValue == b.intValue}
+
   }
 
   def solve(input:Input) = countMatches(a=>true, b=>true, 40000000)
