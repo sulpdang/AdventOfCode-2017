@@ -33,13 +33,6 @@ case class Partner(aVal:Int, bVal:Int)  extends Command {
     arr(bInd) = temp
     arr
   }
-  override def equals(other:Any) = {
-    other match {
-      case o:Partner =>
-      (o.aVal == aVal && o.bVal == bVal) || (o.aVal == bVal) && (o.bVal == aVal)
-      case _ => false
-    }
-  }
 }
 
 object Command {
@@ -70,7 +63,7 @@ object Main extends Day(16) {
   def oneRound(input:Input, arr:Array[Int]) = input.foldLeft(arr){case (acc, elem)=> elem(acc)}
 
   def solve(input:Input)  = { arrToStr(oneRound(input, start)) }
-  def solve2(input:Input) =  { 
+  def solve2(input:Input) =  {
     val solvedTwoMore = oneRound(input.collect{
       case x : Exchange => x
       case x : Spin => x
