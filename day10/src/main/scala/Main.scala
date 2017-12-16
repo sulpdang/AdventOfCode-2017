@@ -5,8 +5,26 @@
 //
 
 
-object Main extends App {
-  import myutil.Util._
+import myutil._
+
+object Main extends Day(10) {
+  import KnotHash._
+  type Input = String
+
+  def processedInput = input.head
+
+  def solve(input:Input) = {
+    val lengths = input.split(',').map{_.toInt}.toList
+    val array = (0 to 255).toArray
+    roundHash(array, lengths, 0, 0)
+    array(0) * array(1)
+  }
+
+  def solve2(input:Input) = knotHash(input).mkString("")
+
+}
+
+object KnotHash {
 
   def reverseArray(arr:Array[Int], s:Int, l:Int, size:Int) = {
     for{
@@ -20,7 +38,7 @@ object Main extends App {
     }
   }
 
-  def roundHash( arr:Array[Int], lengths:List[Int], curPos:Int, skip:Int) :(Int, Int) = {
+  def roundHash(arr:Array[Int], lengths:List[Int], curPos:Int, skip:Int) :(Int, Int) = {
       val size = arr.size
       lengths.foldLeft((curPos, skip)) { case ((startPos, skip), length) => {
         reverseArray(arr, startPos, length, size)
@@ -28,24 +46,16 @@ object Main extends App {
       }}
   }
 
-  def solve = {
-    val lengths = input.head.split(',').map{_.toInt}.toList
-    val array = (0 to 255).toArray
-    roundHash(array, lengths, 0, 0)
-    array(0) * array(1)
-  }
-
-  def solve2 = {
-    val firstInput = input.head
-    val lengths = firstInput.toCharArray.map{_.toInt}.toList ++ List(17,31,73,47,23)
+  def knotHash(inputString:String) = {
+    val lengths = inputString.toCharArray.map{_.toInt}.toList ++ List(17,31,73,47,23)
     val array = (0 to 255).toArray
     (1 to 64).foldLeft((0, 0)){ case ((curPos, skip),_) =>
       roundHash(array, lengths, curPos, skip)
     }
-    array.toList.grouped(16).map{lists => lists.reduce(_^_)}
-      .toList.map{"%02x" format _}
-      .mkString
+    array.grouped(16)
+      .map{_.reduce(_^_)}
+      .map{"%02x" format _}
+      .flatMap{_.toCharArray}.toList
   }
-  println(solve)
-  println(solve2)
+
 }
