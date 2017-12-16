@@ -37,7 +37,7 @@ object Main extends Day(15) {
 
   }
 
-  def solve(input:Input) = countMatches(a=>true, b=>true, 40000000)
-  def solve2(input:Input) = countMatches(a=> a % 4 == 0, b => b % 8 == 0, 5000000)
+  def solve(input:Input)  = countMatches(a=>true, b=>true, 40000000)
+  def solve2(input:Input) = countMatches((_ & 3) == 0, (_ & 7) == 0, 5000000)
 
 }
