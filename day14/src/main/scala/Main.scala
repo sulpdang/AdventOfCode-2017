@@ -35,24 +35,17 @@ object Main extends Day(14) {
   }
 
   def solve(input:Input) = makeMap(input).map{_.count{_ == '1'}}.sum
-
   def solve2(input:Input) = {
     val map = makeMap(input).map{_.toArray}
-
     val direction = List((1,0), (-1,0), (0,1), (0,-1))
-
     def dfs(x:Int, y:Int) {
       def isPossible(x:Int) = 0 <= x && x <= 127
-      if(map(x)(y) == '1') {
-          map(x)(y) = '0'
-          direction
-            .map    {case (i,j) => (i+x, j+y)}
-            .filter {case (i,j) => isPossible(i) && isPossible(j)}
-            .filter {case (i,j) => map(i)(j) == '1'}
-            .foreach{case (i,j) => dfs(i, j) }
-      }
+      direction
+        .map    {case (i,j) => (i+x, j+y)}
+        .filter {case (i,j) => isPossible(i) && isPossible(j)}
+        .filter {case (i,j) => map(i)(j) == '1'}
+        .foreach{case (i,j) => map(i)(j) = '0'; dfs(i, j) }
     }
-
     (for{
       i <- (0 until 128)
       j <- (0 until 128)
