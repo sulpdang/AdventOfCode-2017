@@ -39,15 +39,20 @@ abstract class Day(day:Int) extends App {
   def printRes {
 
     println(s"--- Day $day ---")
-    Try{solve(processedInput)} match {
-      case Success(x) => println(s"A: ${x.toString}")
-      case Failure(e) => println(s"A: Failed(${e.getMessage()} , $e)")
+
+    def num(e:Throwable) = {
+      e.getStackTrace().toArray
+        .find{_.getFileName contains "Main.scala" }.map{_.getLineNumber} getOrElse (-1)
+    }
+    def printSolution(func: => Any, prob:String) = {
+      Try{func} match {
+        case Success(x) => println(s"$prob: ${x.toString}")
+        case Failure(e) => println(s"$prob: Failed[line ${num(e)}](${e.getMessage()} , $e)") 
+      }
     }
 
-    Try{solve2(processedInput)} match {
-      case Success(x) => println(s"B: ${x.toString}")
-      case Failure(e) => println(s"B: Failed(${e.getMessage()}, $e)")
-    }
+    printSolution(solve(processedInput), "A")
+    printSolution(solve2(processedInput), "B")
 
   }
 
