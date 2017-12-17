@@ -5,8 +5,13 @@
 //
 import myutil._
 
-trait Command{
-  def apply(origin:Array[Int]):Array[Int]
+trait Command extends (Array[Int] => Array[Int])
+trait SwapPos extends Command {
+  def swap(arr:Array[Int], aPos:Int, bPos:Int) = {
+    val temp  = arr(aPos)
+    arr(aPos) = arr(bPos)
+    arr(bPos) = temp
+  }
 }
 
 case class Spin(pos:Int) extends Command {
@@ -15,22 +20,18 @@ case class Spin(pos:Int) extends Command {
     tail++head
   }
 }
-case class Exchange(aPos:Int, bPos:Int) extends Command {
+case class Exchange(aPos:Int, bPos:Int) extends SwapPos {
   def apply(arr:Array[Int]) = {
-    val temp = arr(aPos)
-    arr(aPos) = arr(bPos)
-    arr(bPos) = temp
+    swap(arr, aPos, bPos)
     arr
   }
 }
 
-case class Partner(aVal:Int, bVal:Int)  extends Command {
+case class Partner(aVal:Int, bVal:Int)  extends SwapPos {
   def apply(arr:Array[Int]) = {
     val aInd = arr.indexOf(aVal)
     val bInd = arr.indexOf(bVal)
-    val temp = arr(aInd)
-    arr(aInd) = arr(bInd)
-    arr(bInd) = temp
+    swap(arr, aInd, bInd)
     arr
   }
 }
@@ -52,32 +53,32 @@ object Command {
 }
 
 object Main extends Day(16) {
+
   type Input = List[Command]
+
+  def processedInput = input.head.split(',').toList.map{ Command(_) }
 
   def start = (0 to 15).toArray
 
   def arrToStr(arr:Array[Int]) = arr.map{_ + 'a'}.map{_.toChar}.mkString("")
+  def dance(input:Input, arr:Array[Int]) = input.foldLeft(arr){case (acc, move)=> move(acc)}
 
-  def processedInput = input.head.split(',').toList.map{ Command(_) }
+  def solve(input:Input)  = arrToStr(dance(input, start))
+  def solve2(input:Input) = {
 
-  def oneRound(input:Input, arr:Array[Int]) = input.foldLeft(arr){case (acc, elem)=> elem(acc)}
+    val startStr = arrToStr(start)
 
-  def solve(input:Input)  = { arrToStr(oneRound(input, start)) }
-  def solve2(input:Input) =  {
-    val solvedTwoMore = oneRound(input.collect{
-      case x : Exchange => x
-      case x : Spin => x
-    }, start)
-    val solvedOne = oneRound(input, start)
-    val table = (1 to 32).scanLeft(solvedTwoMore){case (acc, elem) =>
-      acc.map{i=>acc(i)}
-    }.toArray
-    table(0) = solvedOne
-    val res = 1000000000.toBinaryString.reverse
-      .zipWithIndex.collect{case (a, i) if a == '1' => i}
-      .toArray
-      .foldLeft(start) { case (acc, elem) => table(elem).map{i=>acc(i)} }
-    arrToStr(res)
+    def getTimes(arr:Array[Int], list:List[String] = List(startStr), times:Int = 0):(List[String], Int) = {
+      (dance(input, arr), times) match {
+        case (_, 1000000000) => (List(), -1)
+        case (x, _) if arrToStr(x) == startStr => (list :+ arrToStr(x), times)
+        case (x, _) => getTimes(x, list :+ arrToStr(x), times+1)
+      }
+    }
+
+    val (list, repeat) = getTimes(start)
+    list(1000000000 % repeat)
+
   }
 
 }
