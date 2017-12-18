@@ -109,7 +109,7 @@ abstract class Day(day:Int) extends App {
     def printSolution(func: => Any, prob:String) = {
       Try{func} match {
         case Success(x) => println(s"$prob: ${Option(x).getOrElse("null")}")
-        case Failure(e) => e.printStackTrace;println(s"$prob: Failed[line ${num(e)}](${e.getMessage()} , $e)")
+        case Failure(e) => println(s"$prob: Failed[line ${num(e)}](${e.getMessage()} , $e)")
       }
     }
 
