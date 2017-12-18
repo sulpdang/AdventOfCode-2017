@@ -6,6 +6,7 @@
 import myutil._
 
 trait Command extends (Array[Int] => Array[Int])
+
 trait SwapPos extends Command {
   def swap(arr:Array[Int], aPos:Int, bPos:Int) = {
     val temp  = arr(aPos)
@@ -58,7 +59,6 @@ object Main extends Day(16) {
   def processedInput = input.head.split(',').toList.map{ Command(_) }
 
   def start = (0 to 15).toArray
-
   def arrToStr(arr:Array[Int]) = arr.map{_ + 'a'}.map{_.toChar}.mkString("")
   def dance(input:Input, arr:Array[Int]) = input.foldLeft(arr){case (acc, move)=> move(acc)}
 
@@ -78,15 +78,6 @@ object Main extends Day(16) {
     val (list, repeat) = getTimes(start)
     list(1000000000 % repeat)
 
-  }
-
-  val inputFileName2 = "input2.txt"
-  val res = getResource(inputFileName2).map{_.split('\n').toList} recoverWith {
-    case e:Throwable => {
-      val content = readSession.flatMap{ downloadInputContent(_) }
-      content.foreach{ x=> writeResource(inputFileName2, x.mkString("\n")) }
-      content
-    }
   }
 
 }
