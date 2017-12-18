@@ -48,19 +48,22 @@ abstract class Day(day:Int) extends App {
   import scala.util._
 
   def sessionFile:String = "../util/.session"
-
-  def readContent:List[String] = {
-    scala.io.Source.fromResource("input.txt").mkString.split('\n').toList
-  }
-
-  val readSession = { Try(scala.io.Source.fromFile(sessionFile).mkString("").trim) }
   val inputFileName = "input.txt"
 
+  def processedInput:Input
+
+  def solve(input:Input):Any
+  def solve2(input:Input):Any
+
+  def readContent:List[String] = getResource(inputFileName).map(_.split('\n').toList).get
+  val readSession = Try(scala.io.Source.fromFile(sessionFile).mkString("").trim)
   def getResource(filename:String) =
     Try{scala.io.Source.fromResource(filename).mkString("")}
 
   def downloadInputContent(session:String):Try[List[String]] = 
-    SimpleHtml.getInputFromSite(s"http://adventofcode.com/2017/day/$day/input", session)
+    SimpleHtml.getInputFromSite(
+      s"http://adventofcode.com/2017/day/$day/input", session
+    )
 
   def writeResource(fileName:String, content:String):Try[Unit] = {
     Try{
@@ -74,9 +77,7 @@ abstract class Day(day:Int) extends App {
   }
 
   def readInput:Try[List[String]] = {
-
     import java.net.URL
-
     getResource(inputFileName).map{_.split('\n').toList} recoverWith {
       case e:Throwable => {
         val content = readSession.flatMap{ downloadInputContent(_) }
@@ -88,15 +89,7 @@ abstract class Day(day:Int) extends App {
 
   }
 
-  def input = readInput match {
-    case Success(e) => e
-    case Failure(e) => throw e
-  }
-
-  def processedInput:Input
-
-  def solve(input:Input):Any
-  def solve2(input:Input):Any
+  def input = readInput.get
 
   def printRes {
 
@@ -106,6 +99,7 @@ abstract class Day(day:Int) extends App {
       e.getStackTrace().toArray
         .find{_.getFileName contains "Main.scala" }.map{_.getLineNumber} getOrElse (-1)
     }
+
     def printSolution(func: => Any, prob:String) = {
       Try{func} match {
         case Success(x) => println(s"$prob: ${Option(x).getOrElse("null")}")
