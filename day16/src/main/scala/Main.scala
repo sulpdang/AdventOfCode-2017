@@ -20,6 +20,7 @@ case class Spin(pos:Int) extends Command {
     tail++head
   }
 }
+
 case class Exchange(aPos:Int, bPos:Int) extends SwapPos {
   def apply(arr:Array[Int]) = {
     swap(arr, aPos, bPos)
@@ -29,9 +30,7 @@ case class Exchange(aPos:Int, bPos:Int) extends SwapPos {
 
 case class Partner(aVal:Int, bVal:Int)  extends SwapPos {
   def apply(arr:Array[Int]) = {
-    val aInd = arr.indexOf(aVal)
-    val bInd = arr.indexOf(bVal)
-    swap(arr, aInd, bInd)
+    swap(arr, arr.indexOf(aVal), arr.indexOf(bVal))
     arr
   }
 }
@@ -79,6 +78,15 @@ object Main extends Day(16) {
     val (list, repeat) = getTimes(start)
     list(1000000000 % repeat)
 
+  }
+
+  val inputFileName2 = "input2.txt"
+  val res = getResource(inputFileName2).map{_.split('\n').toList} recoverWith {
+    case e:Throwable => {
+      val content = readSession.flatMap{ downloadInputContent(_) }
+      content.foreach{ x=> writeResource(inputFileName2, x.mkString("\n")) }
+      content
+    }
   }
 
 }
