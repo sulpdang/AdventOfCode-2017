@@ -62,6 +62,7 @@ abstract class Day(day:Int) extends App {
       val buf = scala.io.Source.fromFile(s"src/main/resources/$filename")
       val res = buf.mkString("")
       buf.close()
+      res
     }
 
   def downloadInputContent(session:String):Try[List[String]] = 
