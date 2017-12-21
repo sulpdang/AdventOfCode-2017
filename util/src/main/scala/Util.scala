@@ -58,7 +58,11 @@ abstract class Day(day:Int) extends App {
   def readContent:List[String] = getResource(inputFileName).map(_.split('\n').toList).get
   val readSession = Try(scala.io.Source.fromFile(sessionFile).mkString("").trim)
   def getResource(filename:String) =
-    Try{scala.io.Source.fromResource(filename).mkString("")}
+    Try{
+      val buf = scala.io.Source.fromFile(s"src/main/resources/$filename")
+      val res = buf.mkString("")
+      buf.close()
+    }
 
   def downloadInputContent(session:String):Try[List[String]] = 
     SimpleHtml.getInputFromSite(
@@ -68,7 +72,7 @@ abstract class Day(day:Int) extends App {
   def writeResource(fileName:String, content:String):Try[Unit] = {
     Try{
       import java.io._
-      val file = new File(s"./src/main/resources/$fileName")
+      val file = new File(s"src/main/resources/$fileName")
       println(file.getAbsolutePath)
       val pw = new PrintWriter(file)
       pw.write(content)
@@ -81,7 +85,6 @@ abstract class Day(day:Int) extends App {
     getResource(inputFileName).map{_.split('\n').toList} recoverWith {
       case e:Throwable => {
         val content = readSession.flatMap{ downloadInputContent(_) }
-        println("Hi")
         content.foreach{ x=> writeResource(inputFileName, x.mkString("\n")) }
         content
       }
