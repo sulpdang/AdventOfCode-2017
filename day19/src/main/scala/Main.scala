@@ -16,17 +16,21 @@ object Main extends Day(19) {
   import scala.collection.mutable._
 
   type RawInput = Array[Array[Char]]
-  type Input = ListBuffer[Char]
+  type Input    = ListBuffer[Char]
 
-  def follow(curPos:Pos, input:RawInput, prevPos:Pos = Pos(1, 0), buf:ListBuffer[Pos] = ListBuffer(), set:Set[(Pos, Pos)] = Set() ):ListBuffer[Pos]= {
-    curPos match {
-      case Pos(x, y) if isValid(curPos, input) && input(curPos.x)(curPos.y) == ' ' => buf
-      case Pos(x, y) if input(x)(y) == '+' =>
-        val newPos = collectOtherPos(curPos, input).filterNot{_ == prevPos.back}.head
-        follow(curPos + newPos, input, newPos, buf :+ curPos, set + ((curPos, prevPos)))
-      case Pos(x, y) =>
-        follow(curPos + prevPos, input, prevPos, buf :+ curPos, set + ((curPos, prevPos)))
-    }
+  def follow( curPos:Pos, input:RawInput, prevPos:Pos = Pos(1, 0),
+              buf:ListBuffer[Char] = ListBuffer()): ListBuffer[Char] = {
+      if(!isValid(curPos, input)) buf
+      else {
+        input(curPos.x)(curPos.y) match {
+          case ' ' => buf
+          case '+' =>
+            val newPos = collectOtherPos(curPos, input)
+                        .filterNot{_ == prevPos.back}.head
+            follow(curPos + newPos, input, newPos, buf :+ '+')
+          case x => follow(curPos + prevPos, input, prevPos, buf :+ x)
+        }
+      }
   }
 
   private def isValid(curPos:Pos, input:RawInput) = {
@@ -46,10 +50,10 @@ object Main extends Day(19) {
 
   def firstLoc(input:RawInput) = input.head.zipWithIndex
     .find{case (a, i) => a == '|'}
-    .map{case (a, i) => Pos(0, i)}.get
+    .map {case (a, i) => Pos(0, i)}.get
 
   lazy val arr = input.map{_.toCharArray}.toArray
-  lazy val buf = follow(firstLoc(arr), arr).map{case Pos(x,y) => input(x)(y)}
+  lazy val buf = follow(firstLoc(arr), arr)
 
   def processedInput = buf
 
