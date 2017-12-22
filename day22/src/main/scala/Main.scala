@@ -42,12 +42,12 @@ object Main extends Day(22) {
   def processedInput = {
     val length = input.length
     val mid    = length / 2
-    val infected = for{
+    val res = for{
       i <- (0 until length)
       j <- (0 until length)
       if input(i)(j) == '#'
     } yield (Vector(j - mid, i - mid) -> Infected)
-    infected.foldLeft(Map[Vector,Status]().withDefaultValue(Clean)){_ + _}
+    Map(res: _*).withDefaultValue(Clean)
   }
 
   lazy val virus = Virus(Vector(0, 0), 3)
@@ -64,6 +64,7 @@ object Main extends Day(22) {
     }
     cnt
   }
+
   def solve2(input:Input) = {
 
     var cnt = 0
