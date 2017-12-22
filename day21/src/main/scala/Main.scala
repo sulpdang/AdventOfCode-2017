@@ -19,7 +19,6 @@ case class BaseMatrix(values:Array[String]) {
   }
 
   def flipVert = BaseMatrix(values.map{_.reverse})
-  def flipHori = BaseMatrix(values.reverse)
 
   def rotate90  = transpose.flipVert
   def rotate180 = rotate90.rotate90
@@ -33,10 +32,7 @@ case class BaseMatrix(values:Array[String]) {
   def next(rule:Rule) = {
     if(rule contains this) { rule(this) }
     else {
-      val cond = similar.find{rule contains _} match {
-        case Some(x) => x
-        case None => throw new Exception(values.mkString("\n"))
-      }
+      val cond = similar.find{rule contains _}.get
       val result = rule(cond)
       rule(this) = result
       result
