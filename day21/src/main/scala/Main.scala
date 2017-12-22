@@ -57,28 +57,28 @@ case class Matrix(val values:Array[String]) extends AnyVal {
     def extract(i:Int, j:Int, amount:Int) =
       BaseMatrix(values.slice(i, i+amount).map{_.slice(j, j + amount)})
 
-    def insertToTarget(target:Array[Array[Char]], nextBaseMatrix:BaseMatrix, px:Int, py:Int) {
+    def insertBaseToMatrix(matrix:Array[Array[Char]], nextBaseMatrix:BaseMatrix, px:Int, py:Int) {
       val values = nextBaseMatrix.values
       for{
         i <- (0 until values.size)
         j <- (0 until values.size)
       } {
-        target(i+px)(j+py) = values(i)(j)
+        matrix(i+px)(j+py) = values(i)(j)
       }
     }
 
     def nextWithInterval(interval:Int, nextInterval:Int) =  {
         val nextLength = length / interval * nextInterval
-        val target = Array.ofDim[Char](nextLength, nextLength)
+        val result = Array.ofDim[Char](nextLength, nextLength)
         for{
           (i, ni) <- (0 until (length) by interval).zip(0 until nextLength by nextInterval)
           (j, nj) <- (0 until (length) by interval).zip(0 until nextLength by nextInterval)
         } {
           val baseMatrix = extract(i, j, interval)
           val next = baseMatrix.next(rule)
-          insertToTarget(target, next, ni, nj)
+          insertBaseToMatrix(result, next, ni, nj)
         }
-        Matrix(target.map{_.mkString("")})
+        Matrix(result.map{_.mkString("")})
     }
     length match {
       case l if l % 2 == 0 => nextWithInterval(2, 3)
@@ -108,20 +108,18 @@ object Main extends Day(21) {
   type Input = Array[String]
 
   def start = """.#.
-  |..#
-  |###""".stripMargin.split('\n').map(_.trim).toArray
+                |..#
+                |###""".stripMargin.split('\n').map(_.trim).toArray
 
   def processedInput = input.toArray
 
   lazy val rule = Map(input.map{Rule(_)}: _*)
 
   def solve(input:Input) = {
-    memory.clear
     (1 to 5).foldLeft{Matrix(start)} {case (a, _) => a.nextMatrix(rule)}.countBit
   }
 
   def solve2(input:Input) = {
-    memory.clear
     (1 to 18).foldLeft{Matrix(start)}{case (a, _) => a.nextMatrix(rule)}.countBit
   }
 }
