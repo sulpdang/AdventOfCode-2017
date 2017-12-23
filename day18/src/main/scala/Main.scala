@@ -7,20 +7,19 @@
 import myutil._
 
 trait Result{ val pos:Int }
-
 case class Normal(val pos:Int) extends Result
+
 trait Abnormal extends Result
 case class Snd(val pos:Int, val value:Long) extends Abnormal
 case class Rcv(val pos:Int, val reg:String) extends Abnormal
 
-object Types {
+trait Types {
   import scala.collection.mutable.Map
   type Memory = Map[String, Long]
   type Instruction = (Int,Memory) => Result
 }
 
-object Instruction {
-  import Types._
+object Instruction extends Types {
 
   private def getValue(dontKnow:String, map:Memory) = {
     if(dontKnow.forall{Character.isAlphabetic(_)}) map(dontKnow)
@@ -39,7 +38,7 @@ object Instruction {
       case "mod" => (curPos, mem) => mem(reg) %= getValue(valueOrReg, mem) ; Normal(curPos+1)
       case "snd" => (curPos, mem) => Snd(curPos+1, getValue(reg, mem))
       case "rcv" => (curPos, mem) => Rcv(curPos+1, reg)
-      case "jgz" => (curPos, mem) => 
+      case "jgz" => (curPos, mem) =>
         if(getValue(reg, mem) > 0) Normal(curPos + getValue(valueOrReg, mem).intValue)
         else Normal(curPos+1)
     }
@@ -55,9 +54,8 @@ object Storage {
   def update(id:Int, list:List[Long]) = queued(id) = list
 }
 
-object Main extends Day(18) {
+object Main extends Day(18) with Types{
 
-  import Types._
   import scala.collection.mutable._
 
   type Input = List[Instruction]
@@ -67,7 +65,7 @@ object Main extends Day(18) {
   def genInstructions(input:Input, wiredMap:List[Memory]) =
     wiredMap.map{ mem =>
       Iterator.iterate[(Result, Memory)]((Normal(0), mem)) {
-        case (x, mem) => (input(x.pos)(x.pos, mem), mem)
+        case (result, mem) => (input(result.pos)(result.pos, mem), mem)
       }.takeWhile{case (x, mem) => x.pos < input.length}
        .collect{case (x:Abnormal, mem) => (x, mem)}
     }
@@ -75,33 +73,28 @@ object Main extends Day(18) {
   def processedInput = input.map{Instruction(_)}
 
   def solve(input:Input)  = genInstructions(input, genMemory)(0)
-    .takeWhile{!_._1.isInstanceOf[Rcv]}
+    .takeWhile{case (Rcv(_, reg), mem) => mem(reg) == 0; case _ => true}
     .collect{case (x:Snd, _) => x}
     .reduce{(_,b)=> b}.value
 
   def solve2(input:Input) = {
-    val mem = genMemory
+    val mem       = genMemory
     val generator = genInstructions(input, mem)
-    val iterators = (0 to 1).toList.zip(generator).map{ case (id, gen) =>
+    val iterators = generator.zipWithIndex.map{ case (gen, id) =>
       if(!gen.hasNext) Iterator.empty
-
-      else Iterator.iterate(gen.next){ case (prev, mem) =>
-
-        (Storage(id), prev) match {
-          case (_ , Snd(_, value))  =>
-            { Storage(1-id) :+= value; gen.next }
-          case (head::tail, Rcv(_, reg)) =>
-            { mem(reg) = head ; Storage(id) = tail ; gen.next ; }
-          case (Nil, x:Rcv) => (x, mem)
-          case _    => gen.next
-        }
-
+      else Iterator.iterate(gen.next){
+        case (Snd(_, value), mem) => Storage(1-id) :+= value; gen.next
+        case (x@Rcv(_, reg), mem) =>
+          Storage(id) match {
+            case head::tail => { mem(reg) = head ; Storage(id) = tail ; gen.next ; }
+            case Nil => (x, mem)
+          }
+        case _ => gen.next
       }
     }
-    Iterator.iterate[(Result, Result)]((Normal(0), Normal(0))) { case (prevA, prevB) =>
-      (iterators(0).next._1, iterators(1).next._1)
-    }.takeWhile{case (a:Rcv, b:Rcv)=> !Storage.isAllEmpty; case _=> true}
-     .count{case (_, b:Snd) => true; case _=> false}
+    iterators(0).zip(iterators(1)).map{case (a, b) => (a._1, b._1)}
+      .takeWhile{case (a:Rcv, b:Rcv)=> !Storage.isAllEmpty; case _=> true}
+      .count{case (_, b:Snd) => true; case _=> false}
   }
 
 }

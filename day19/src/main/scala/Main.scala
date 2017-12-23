@@ -48,9 +48,7 @@ object Main extends Day(19) {
     res
   }
 
-  def firstLoc(input:RawInput) = input.head.zipWithIndex
-    .find{case (a, i) => a == '|'}
-    .map {case (a, i) => Pos(0, i)}.get
+  def firstLoc(input:RawInput) = Pos(0, input.head.indexOf('|'))
 
   lazy val arr = input.map{_.toCharArray}.toArray
   lazy val buf = follow(firstLoc(arr), arr)
