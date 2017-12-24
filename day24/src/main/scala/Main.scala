@@ -48,4 +48,5 @@ object Main extends Day(24) {
    traverseChild(0, input.toSet)
   }
 
+
 }
