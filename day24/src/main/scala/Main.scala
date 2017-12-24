@@ -47,6 +47,4 @@ object Main extends Day(24) {
    implicit def order:Ordering[Result] = Ordering.by(e=>(e.l, e.m))
    traverseChild(0, input.toSet)
   }
-
-
 }
